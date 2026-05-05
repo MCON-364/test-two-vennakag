@@ -79,6 +79,9 @@ public class ParallelReportBuilder {
             throws InterruptedException, ExecutionException, IllegalArgumentException {
 
         // TODO 2A: validate inputs where appropriate
+        if(batches == null || batches.isEmpty()){
+            throw new IllegalArgumentException();
+        }
 
         // TODO 2B: create the concurrency structure needed for the pattern you chose
         List<Future<IntSummaryStatistics>> futures = new ArrayList<>();
@@ -111,7 +114,7 @@ public class ParallelReportBuilder {
             totalAmount += future.get().getSum();
             totalCount += future.get().getCount();
             globalMax = Math.max(globalMax, future.get().getMax());
-            globalMax = Math.min(globalMax, future.get().getMin());
+            globalMin = Math.min(globalMin, future.get().getMin());
         }
 
         // TODO 2E: shut down any concurrency resources you created

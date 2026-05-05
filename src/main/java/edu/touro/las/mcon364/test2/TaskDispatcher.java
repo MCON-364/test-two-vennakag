@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 /**
  * Problem 2 of 3
@@ -68,13 +69,13 @@ public class TaskDispatcher {
      */
     public List<Future<String>> dispatch(List<String> tasks) {
         // TODO 3
-        tasks.stream().forEach(task -> {
-            pool.submit(() -> {
-                task.toUpperCase();
-                recordResult(task);
+        return tasks.stream().map(task -> {
+            return pool.submit(() -> {
+                recordResult(task.toUpperCase());
+                completedCount++;
+                return task.toUpperCase();
             });
-        });
-        return null; //placeholder
+        }).collect(Collectors.toList());
     }
 
     public void recordResult(String result) {
@@ -94,7 +95,7 @@ public class TaskDispatcher {
 
     public List<String> getResults() {
         //TODO 6
-        return results; //placeholder
+        return results.stream().toList(); //placeholder
     }
 
     public int getCompletedCount() {
