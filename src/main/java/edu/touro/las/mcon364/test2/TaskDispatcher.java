@@ -3,8 +3,10 @@ package edu.touro.las.mcon364.test2;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Problem 2 of 3
@@ -46,10 +48,10 @@ public class TaskDispatcher {
     public static final int POOL_SIZE = 4;
 
     // TODO 1: replace null with an appropriate class
-    private final ExecutorService pool = null;
+    private final ExecutorService pool = Executors.newFixedThreadPool(POOL_SIZE);
 
     // TODO 2: replace null — which Lock implementation lets you lock and unlock explicitly?
-    private final Lock lock = null;
+    private final Lock lock = new ReentrantLock();
 
     // provided — do not change
     private final List<String> results = new ArrayList<>();
@@ -66,25 +68,38 @@ public class TaskDispatcher {
      */
     public List<Future<String>> dispatch(List<String> tasks) {
         // TODO 3
+        tasks.stream().forEach(task -> {
+            pool.submit(() -> {
+                task.toUpperCase();
+                recordResult(task);
+            });
+        });
         return null; //placeholder
     }
 
     public void recordResult(String result) {
         //TODO 4
+        lock.lock();
+        try{
+            results.add(result);
+        }finally {
+            lock.unlock();
+        }
     }
 
     public void shutdown() throws InterruptedException {
         //TODO 5
+        pool.shutdown();
     }
 
     public List<String> getResults() {
         //TODO 6
-        return null; //placeholder
+        return results; //placeholder
     }
 
     public int getCompletedCount() {
         //TODO 6
-        return 0; //placeholder
+        return completedCount; //placeholder
     }
 
 }
